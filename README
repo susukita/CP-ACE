@@ -1,0 +1,13 @@
+CP-ACE functions are utilities to exchange data between processes
+where we know only to which processes each process sends data but do
+not know from how many processes each process receives in parallel
+programming.
+
+The installation procedure is written on the INSTALL file.
+Sample programs of CP-ACE functions and the function reference are
+written in the document.pdf. Source codes of sample programs are
+
+  mpi_export.c for CP-ACE function implemented on MPI 
+  mpi_export_f90.f90 for Fortran interface to the function
+  mpi_export_f.f for Fortran 77 interface to the function
+  acp_export.c for CP-ACE functions implemented on ACP
