@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2017.2 (Released Jan 23, 2017) -->
+<HTML>
+<HEAD>
+<TITLE>Fortran interface to the function on MPI</TITLE>
+<META NAME="description" CONTENT="Fortran interface to the function on MPI">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2017.2">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="document.css">
+
+<LINK REL="next" HREF="node9.html">
+<LINK REL="previous" HREF="node7.html">
+<LINK REL="up" HREF="node6.html">
+<LINK REL="next" HREF="node9.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html103"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html101"
+  HREF="node6.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html95"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html104"
+  HREF="node9.html">Fortran 77 interface to</A>
+<B> Up:</B> <A NAME="tex2html102"
+  HREF="node6.html">Function reference</A>
+<B> Previous:</B> <A NAME="tex2html96"
+  HREF="node7.html">Function implemented on MPI</A>
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00022000000000000000"></A>
+<A NAME="sec:mpif"></A>
+<BR>
+Fortran interface to the function on MPI
+</H2>
+
+<P>
+The following function is declared in <TT>module cp_mpi</TT>.
+
+<P>
+Like MPI functions, each process must call <TT>mpi_init</TT> or <TT>  mpi_init_thread</TT> 
+before calling the following function. 
+Each process must call <TT>mpi_finalize</TT> before exiting.
+
+<P>
+
+<UL>
+<LI><TT>integer(8) cp_mpi_export(sendbuf, sendsizes, dests, destcount, recvbuf, recvsizemax, comm)</TT>
+
+<P>
+<TT>&lt;arbitrary type&gt; sendbuf(*)
+<BR>
+integer(8) sendsizes(*)
+<BR>
+integer dests(destcount)
+<BR>
+integer destcount
+<BR>  &lt;arbitrary type&gt; recvbuf(*)
+<BR>
+integer(8) recvsizemax
+<BR>
+mpi_comm comm</TT>
+
+<P>
+<TT>cp_mpi_export</TT> sends 
+<TT>sendsizes(i)</TT> ( <!-- MATH
+ ${\tt i} = 1, 2,
+..., {\tt destcount}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="160" HEIGHT="30" ALIGN="MIDDLE" BORDER="0"
+ SRC="img6.png"
+ ALT="${\tt i} = 1, 2,
+..., {\tt destcount}$"></SPAN>) bytes from array <TT>sendbuf</TT>
+to the process of rank <TT>dests(i)</TT> in the communicator <TT>  comm</TT>. The first <TT>sendsizes(1)</TT> bytes of the array
+are sent to <TT>dests(1)</TT>, the following <TT>sendsizes(2)</TT> bytes are sent to the
+process of rank <TT>dests(2)</TT>, ..., the last <TT>sendsizes(destcount)</TT>
+bytes are sent to the process of rank <TT>  dests(destcount)</TT>. <TT>  dests(1)</TT>, <TT>dests(2)</TT>, ..., and <TT>  dests(destcount)</TT> must be all different. <TT>dests(i)</TT> may be the same as the rank of the process
+calling <TT>cp_mpi_export</TT>.
+
+<P>
+<TT>cp_mpi_export</TT> also receives data which have been sent by <TT>  cp_mpi_export</TT> from other
+processes to array <TT>recvbuf</TT>. 
+Data which the first source process has sent are received into the head of the
+array,
+followed by data which the second source process has sent,
+followed by data which the third source process has sent and so on.
+The order of source processes is undefined.
+<TT>recvbuf</TT> must not be overlapped with <TT>sendbuf</TT>.
+
+<P>
+If data to receive is greater than <TT>  recvsizemax</TT> bytes in total, <TT>cp_mpi_export</TT> fails. Once <TT>  cp_mpi_export</TT> fails, behaviors of following <TT>cp_mpi_export</TT>
+and MPI function calls become undefined.
+<TT>recvsizemax</TT> must be the same in all processes.
+
+<P>
+<TT>cp_mpi_export</TT> returns the total size of receive data on
+success. The size is returned in bytes. <TT>cp_mpi_export</TT> returns
+a negative integer on failure.
+
+<P>
+All processes included in <TT>comm</TT> must call <TT>cp_mpi_export</TT>.
+
+<P>
+</LI>
+</UL>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html103"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html101"
+  HREF="node6.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html95"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html104"
+  HREF="node9.html">Fortran 77 interface to</A>
+<B> Up:</B> <A NAME="tex2html102"
+  HREF="node6.html">Function reference</A>
+<B> Previous:</B> <A NAME="tex2html96"
+  HREF="node7.html">Function implemented on MPI</A></DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

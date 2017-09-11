@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2017.2 (Released Jan 23, 2017) -->
+<HTML>
+<HEAD>
+<TITLE>Using from Fortran on MPI</TITLE>
+<META NAME="description" CONTENT="Using from Fortran on MPI">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2017.2">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="document.css">
+
+<LINK REL="next" HREF="node4.html">
+<LINK REL="previous" HREF="node2.html">
+<LINK REL="up" HREF="node1.html">
+<LINK REL="next" HREF="node4.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html51"
+  HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html49"
+  HREF="node1.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html43"
+  HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html52"
+  HREF="node4.html">Using from Fortran 77</A>
+<B> Up:</B> <A NAME="tex2html50"
+  HREF="node1.html">Sample programs</A>
+<B> Previous:</B> <A NAME="tex2html44"
+  HREF="node2.html">Using from C on</A>
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00012000000000000000">
+Using from Fortran on MPI</A>
+</H2>
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:export_f"></A><A NAME="49"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Fortran sample program</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="731" HEIGHT="210" ALIGN="BOTTOM" BORDER="0"
+ SRC="img3.png"
+ ALT="\includegraphics[scale=0.5]{mpi_export_f90.eps}">
+    
+</DIV></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<BR>
+<PRE  CLASS="verbatim">! sample program for Fortran interface to CP-ACE function implemented
+! on MPI
+
+  use cp_mpi
+
+  real*8 sendbuf(3) ! send buffer
+  real*8 recvbuf(3) ! receive buffer
+  integer*8 sendsizes(2) ! sizes of data sent to other processes
+  integer dests(2) ! ranks of destination processes
+  integer destcount ! number of destination processes
+  integer*8 recvsize ! total size of receive data
+  integer*8 real8size ! size of real*8
+  integer rank
+  integer i
+  integer ierr
+
+  call mpi_init(ierr)
+  call mpi_comm_rank(mpi_comm_world, rank, ierr)
+
+  ! get size of real*8 in bytes
+  real8size = sizeof(sendbuf(1))
+
+  ! data and destination processes
+  if(rank .eq. 0)then
+     ! rank 0 sends 1.0 and 2.0 to rank 1 and sends 3.0 to rank 2
+     sendbuf(1) = 1.0
+     sendbuf(2) = 2.0
+     sendbuf(3) = 3.0
+     sendsizes(1) = 2 * real8size
+     sendsizes(2) = 1 * real8size
+     dests(1) = 1
+     dests(2) = 2
+     destcount = 2
+  else if(rank .eq. 1)then
+     ! rank 1 sends 4.0 to rank 0
+     sendbuf(1) = 4.0
+     sendsizes(1) = 1 * real8size
+     dests(1) = 0
+     destcount = 1
+  else
+     ! rank 2 sends no data
+     destcount = 0
+  end if
+
+  ! exchange data
+  recvsize = cp_mpi_export(sendbuf, sendsizes, dests, destcount, recvbuf, &amp;
+       3 * real8size, mpi_comm_world)
+
+  ! print receive data
+  do i = 1, int(recvsize / real8size)
+     print *, 'rank', rank, 'received', recvbuf(i)
+  end do
+  
+  call mpi_finalize(ierr)
+end
+</PRE>
+<P>
+ 
+<P>
+<TT>use cp_mpi</TT> declares the CP-ACE function.
+
+<P>
+<TT>mpi_init</TT> must be called before calling the CP-ACE function.
+
+<P>
+<TT>sizeof</TT> returns the size of the argument in bytes.
+
+<P>
+<TT>cp_mpi_export</TT> sends data to some processes and receives data
+which other processes have sent by <TT>cp_mpi_export</TT> (Figure <A HREF="#fig:export_f">2</A>).
+The first
+argument <TT>sendbuf</TT> specifies an array of the send buffer.
+The head
+of <TT>sendbuf</TT> is sent to the first destination process, following
+data are sent to the second destination process,
+following data are sent to the third destination process and so on.
+The second argument <TT>sendsizes</TT> is an array that contains sizes of data
+sent to destination processes.
+<TT>sendsizes(i)</TT> specifies the size of data sent to the <SPAN CLASS="MATH"><IMG
+ WIDTH="13" HEIGHT="13" ALIGN="BOTTOM" BORDER="0"
+ SRC="img4.png"
+ ALT="${\tt i}$"></SPAN>-th
+destination process in bytes.
+Unlike MPI, the data size is not specified of the number of
+elements nor the data type is. Note that data sizes are <TT>  integer*8</TT>.
+The third argument <TT>dests</TT> is an array that contains ranks of destination
+processes. <TT>dests(i)</TT> specifies the rank of the <SPAN CLASS="MATH"><IMG
+ WIDTH="13" HEIGHT="13" ALIGN="BOTTOM" BORDER="0"
+ SRC="img4.png"
+ ALT="${\tt i}$"></SPAN>-th
+destination process.
+The fourth argument <TT>destcount</TT> is the number of destination processes.
+The fifth argument <TT>recvbuf</TT> is an array of the receive buffer.
+If a process receives from multiple processes, the order of data
+received from one process and data received from another process
+is undefined.
+The sixth argument <TT>3 * real8size</TT> is the size of <TT>recvbuf</TT> in
+bytes. The last 
+argument is the communicator. <TT>cp_mpi_export</TT> returns the
+size of total receive data in bytes.
+
+<P>
+To compile this program, type
+
+<P>
+<TT>mpif90 mpi_export_f90.f90 -lcp_mpi</TT>
+
+<P>
+<TT>mpif90</TT> is the command for compiling MPI programs written in Fortran.
+On some systems, the command name may differ.
+
+<P>
+You can execute this program like
+
+<P>
+<TT>mpiexec -n 3 ./a.out</TT>
+
+<P>
+This program prints
+
+<P>
+<PRE>
+rank          0 received  4.0000000000000000
+rank          1 received  1.0000000000000000
+rank          1 received  2.0000000000000000
+rank          2 received  3.0000000000000000
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html51"
+  HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html49"
+  HREF="node1.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html43"
+  HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html52"
+  HREF="node4.html">Using from Fortran 77</A>
+<B> Up:</B> <A NAME="tex2html50"
+  HREF="node1.html">Sample programs</A>
+<B> Previous:</B> <A NAME="tex2html44"
+  HREF="node2.html">Using from C on</A></DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

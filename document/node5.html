@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2017.2 (Released Jan 23, 2017) -->
+<HTML>
+<HEAD>
+<TITLE>Using on ACP</TITLE>
+<META NAME="description" CONTENT="Using on ACP">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2017.2">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="document.css">
+
+<LINK REL="previous" HREF="node4.html">
+<LINK REL="up" HREF="node1.html">
+<LINK REL="next" HREF="node6.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html69"
+  HREF="node6.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html67"
+  HREF="node1.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html63"
+  HREF="node4.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html70"
+  HREF="node6.html">Function reference</A>
+<B> Up:</B> <A NAME="tex2html68"
+  HREF="node1.html">Sample programs</A>
+<B> Previous:</B> <A NAME="tex2html64"
+  HREF="node4.html">Using from Fortran 77</A>
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00014000000000000000">
+Using on ACP</A>
+</H2>
+
+<P>
+<BR>
+<PRE  CLASS="verbatim">/* sample program for CP-ACE functions implemented on ACP */
+
+#include "cp_acp.h"
+#include &lt;stdio.h&gt;
+
+int main(int argc, char **argv){
+    double *sendbuf; /* send buffer */
+    double *recvbuf; /* receive buffer */
+    long sendsizes[2]; /* sizes of data sent to other processes */
+    int dests[2]; /* ranks of destination processes */
+    int destcount; /* number of destination processes */
+    long recvsize; /* total size of receive data */
+    int rank;
+    int i;
+
+    acp_init(&amp;argc, &amp;argv);
+    rank = acp_rank();
+
+    /* allocate send and receive buffers */
+    sendbuf = cp_acp_allocate(3 * sizeof(double));
+    recvbuf = cp_acp_allocate(3 * sizeof(double));
+
+    /* data and destination processes */
+    if(rank == 0){
+        /* rank 0 sends 1.0 and 2.0 to rank 1 and sends 3.0 to rank 2 */
+        sendbuf[0] = 1.0;
+        sendbuf[1] = 2.0;
+        sendbuf[2] = 3.0;
+        sendsizes[0] = 2 * sizeof(double);
+        sendsizes[1] = 1 * sizeof(double);
+        dests[0] = 1;
+        dests[1] = 2;
+        destcount = 2;
+    }else if(rank == 1){
+        /* rank 1 sends 4.0 to rank 0 */
+        sendbuf[0] = 4.0;
+        sendsizes[0] = 1 * sizeof(double);
+        dests[0] = 0;
+        destcount = 1;
+    }else{
+        /* rank 2 sends no data */
+        destcount = 0;
+    }        
+
+    /* exchange data */
+    recvsize = cp_acp_export(sendbuf, sendsizes, dests, destcount,
+                             recvbuf, 3 * sizeof(double));
+
+    /* print receive data */
+    for(i = 0; i &lt; recvsize / sizeof(double); i ++){
+        printf("rank %d received %f\n", rank, recvbuf[i]);
+    }
+
+    acp_finalize();
+    return 0;
+}
+</PRE>
+<P>
+ 
+<P>
+<TT>#include "cp_acp.h"</TT> includes declarations of CP-ACE functions.
+
+<P>
+<TT>acp_init</TT> must be called before calling CP-ACE functions.
+
+<P>
+<TT>cp_acp_allocate</TT> allocates send and receive buffers.
+The argument <TT>3 * sizeof(double)</TT>
+specifies the size of send or receive buffer in bytes.
+
+<P>
+<TT>cp_acp_export</TT> sends data to some processes and receives data
+which other processes have sent by <TT>cp_acp_export</TT> (Figure <A HREF="node2.html#fig:export_c">1</A>).
+The first
+argument <TT>sendbuf</TT> specifies a pointer to the send buffer.
+The head of <TT>sendbuf</TT> is sent to the first destination process,
+following data are sent to the second destination process,
+following data are sent to the third destination process and so on.
+The second argument <TT>sendsizes</TT> is an array that contains sizes of data
+sent to destination processes.
+<TT>sendsizes[i]</TT> specifies the size of data sent to the <SPAN CLASS="MATH"><IMG
+ WIDTH="53" HEIGHT="32" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$({\tt i} + 1)$"></SPAN>-th
+destination process in bytes.
+The third argument <TT>dests</TT> is an array that contains ranks of destination
+processes. <TT>dests[i]</TT> specifies the rank of the <SPAN CLASS="MATH"><IMG
+ WIDTH="53" HEIGHT="32" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$({\tt i} + 1)$"></SPAN>-th
+destination process.
+The fourth argument <TT>destcount</TT> is the number of destination processes.
+The fifth argument <TT>recvbuf</TT> is a pointer to the receive buffer.
+If a process receives from multiple processes, the order of data
+received from one process and data received from another process
+is undefined.
+The last argument <TT>3 * sizeof(double)</TT> is the size of the receive
+buffer in bytes. <TT>cp_acp_export</TT> returns the
+size of total receive data in bytes.
+
+<P>
+To compile this program, type
+
+<P>
+<TT>acpcc acp_export.c -lcp_acp</TT>
+
+<P>
+You can execute this program like
+
+<P>
+<TT>acprun -acp-nprocs 3 -acp-startermemsize=20000 ./a.out</TT>
+
+<P>
+<TT>cp_acp_allocate</TT> allocates memory from ACP starter memory
+excluding first 10240 bytes.
+Starter memory must be large enough to contain the 10240 bytes,
+work region for CP-ACE functions (8 bytes), the send and receive buffers.
+
+<P>
+This program prints
+
+<P>
+<PRE>
+rank 0 received 4.000000
+rank 1 received 1.000000
+rank 1 received 2.000000
+rank 2 received 3.000000
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html69"
+  HREF="node6.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html67"
+  HREF="node1.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html63"
+  HREF="node4.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html70"
+  HREF="node6.html">Function reference</A>
+<B> Up:</B> <A NAME="tex2html68"
+  HREF="node1.html">Sample programs</A>
+<B> Previous:</B> <A NAME="tex2html64"
+  HREF="node4.html">Using from Fortran 77</A></DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

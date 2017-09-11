@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2017.2 (Released Jan 23, 2017) -->
+<HTML>
+<HEAD>
+<TITLE>CP-ACE functions</TITLE>
+<META NAME="description" CONTENT="CP-ACE functions">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2017.2">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="document.css">
+
+<LINK REL="next" HREF="node1.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html5"
+  HREF="node1.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up_g.png"> 
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev_g.png">   
+<BR>
+<B> Next:</B> <A NAME="tex2html6"
+  HREF="node1.html">Sample programs</A>
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<P>
+<H1 ALIGN="CENTER">CP-ACE functions</H1>
+<DIV CLASS="author_info">
+
+<P ALIGN="CENTER"><STRONG>Ryutaro Susukita<A NAME="tex2html1"
+  HREF="footnode.html#foot5"><SUP><SPAN CLASS="arabic">1</SPAN></SUP></A></STRONG></P>
+</DIV>
+
+<P>
+CP-ACE functions exchange data between processes where we know only to
+which processes each process sends data but do not know from how many
+processes each process receives in parallel
+programming. Unfortunately, we cannot write simply
+such data exchange using Message Passing Interface (MPI) Version 3
+[<A
+ HREF="node11.html#susukita16">1</A>]. If we use CP-ACE functions, we
+can exchange data using a single communication function with high
+efficiency. CP-ACE functions are implemented on MPI or Advanced
+Communication Primitives (ACP) [<A
+ HREF="node11.html#acp">2</A>]. The functions are
+written in C language, but the function on MPI has Fortran interfaces.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html7"
+  HREF="node1.html">Sample programs</A>
+<UL>
+<LI><A NAME="tex2html8"
+  HREF="node2.html">Using from C on MPI</A>
+<LI><A NAME="tex2html9"
+  HREF="node3.html">Using from Fortran on MPI</A>
+<LI><A NAME="tex2html10"
+  HREF="node4.html">Using from Fortran 77 on MPI</A>
+<LI><A NAME="tex2html11"
+  HREF="node5.html">Using on ACP</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html12"
+  HREF="node6.html">Function reference</A>
+<UL>
+<LI><A NAME="tex2html13"
+  HREF="node7.html">Function implemented on MPI</A>
+<LI><A NAME="tex2html14"
+  HREF="node8.html">Fortran interface to the function on MPI</A>
+<LI><A NAME="tex2html15"
+  HREF="node9.html">Fortran 77 interface to the function on MPI</A>
+<LI><A NAME="tex2html16"
+  HREF="node10.html">Functions implemented on ACP</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html17"
+  HREF="node11.html">Bibliography</A>
+<LI><A NAME="tex2html18"
+  HREF="node12.html">About this document ...</A>
+</UL>
+<!--End of Table of Child-Links-->
+<BR><HR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2017.2 (Released Jan 23, 2017) -->
+<HTML>
+<HEAD>
+<TITLE>Functions implemented on ACP</TITLE>
+<META NAME="description" CONTENT="Functions implemented on ACP">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2017.2">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="document.css">
+
+<LINK REL="previous" HREF="node9.html">
+<LINK REL="up" HREF="node6.html">
+<LINK REL="next" HREF="node11.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html121"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html119"
+  HREF="node6.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html115"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html122"
+  HREF="node11.html">Bibliography</A>
+<B> Up:</B> <A NAME="tex2html120"
+  HREF="node6.html">Function reference</A>
+<B> Previous:</B> <A NAME="tex2html116"
+  HREF="node9.html">Fortran 77 interface to</A>
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00024000000000000000"></A>
+<A NAME="sec:acp"></A>
+<BR>
+Functions implemented on ACP
+</H2>
+
+<P>
+The following functions are declared in <TT>cp_acp.h</TT>.
+
+<P>
+Like ACP functions, each process must call <TT>acp_init</TT> before calling 
+the following functions.
+Each process must call <TT>acp_finalize</TT> before exiting. If one of the functions is called, all processes
+must call the function.
+
+<P>
+The following functions use ACP starter
+memory excluding its head region. The environment variable <TT>  CP_ACP_STARTER_BASE</TT> specifies the size of the head region in bytes.
+If the variable is not set, the size is 10240 bytes.
+
+<P>
+
+<UL>
+<LI><TT>void *cp_acp_allocate(long size)</TT>
+
+<P>
+<TT>cp_acp_allocate</TT> allocates memory region of <TT>size</TT> bytes.
+  <TT>size</TT> must be the same in all processes. The memory region is
+  allocated from ACP starter memory.
+
+<P>
+<TT>cp_acp_allocate</TT> returns a pointer to the memory region on success. It
+  returns <TT>NULL</TT> on failure.
+
+<P>
+</LI>
+<LI><TT>void cp_acp_free(void *buf)</TT>
+
+<P>
+<TT>cp_acp_free</TT> frees memory region <TT>buf</TT>. <TT>buf</TT> must
+  have been allocated by <TT>cp_acp_allocate</TT>.
+  If <TT>cp_acp_allocate</TT> has been called multiple times and <TT>    buf</TT> has been allocated by the <SPAN CLASS="MATH"><IMG
+ WIDTH="10" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img7.png"
+ ALT="$i$"></SPAN>-th call, <SPAN CLASS="MATH"><IMG
+ WIDTH="10" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img7.png"
+ ALT="$i$"></SPAN> must be the same in all
+  processes.
+
+<P>
+</LI>
+<LI><TT>long cp_acp_export(const void *sendbuf, const long
+  *sendsizes, const int *dests, int destcount, void *recvbuf, long
+  recvsizemax)</TT>
+
+<P>
+<TT>cp_acp_export</TT> sends 
+<TT>sendsizes[i]</TT> ( <!-- MATH
+ ${\tt i} = 0, 1,
+ 2, ..., {\tt destcount} - 1$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="202" HEIGHT="30" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.png"
+ ALT="${\tt i} = 0, 1,
+2, ..., {\tt destcount} - 1$"></SPAN>) bytes from memory region <TT>sendbuf</TT>
+to the process of rank <TT>dests[i]</TT>. The first <TT>sendsizes[0]</TT>
+bytes of the memory region
+are sent to <TT>dests[0]</TT>, the following <TT>sendsizes[1]</TT> bytes are sent to the
+process of rank <TT>dests[1]</TT>, the following <TT>sendsizes[2]</TT> bytes are
+sent to the process of rank <TT>dests[2]</TT>, ..., the last <TT>  sendsizes[destcount - 1]</TT> bytes are sent to the
+process of rank <TT>dests[destcount - 1]</TT>.
+<TT>sendbuf</TT> must have been allocated by <TT>cp_acp_allocate</TT>.
+<TT>dests[0]</TT>,  <TT>dests[1]</TT>, <TT>dests[2]</TT>, ..., and <TT>  dests[destcount - 1]</TT> must be all different. 
+<TT>dests[i]</TT> may be the same as the rank of the process
+calling <TT>cp_acp_export</TT>.
+
+<P>
+<TT>cp_acp_export</TT> also receives data which have been sent by
+<TT>cp_acp_export</TT> from other processes to memory region <TT>recvbuf</TT>. 
+Data which the first source process has sent are received into the head of the
+memory region,
+followed by data which the second source process has sent,
+followed by data which the third source process has sent and so on.
+The order of source processes is undefined.
+<TT>recvbuf</TT> must have been allocated by <TT>cp_acp_allocate</TT>.
+If <TT>recvbuf</TT> has
+been allocated in the <SPAN CLASS="MATH"><IMG
+ WIDTH="10" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img7.png"
+ ALT="$i$"></SPAN>-th <TT>cp_acp_allocate</TT> call, <SPAN CLASS="MATH"><IMG
+ WIDTH="10" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img7.png"
+ ALT="$i$"></SPAN> must be the same in all processes.
+<TT>recvbuf</TT> must not be overlapped with <TT>sendbuf</TT>.
+
+<P>
+If data to receive is greater than <TT>  recvsizemax</TT> bytes in total, <TT>cp_acp_export</TT> fails.
+<TT>  recvsizemax</TT> must be the same in all processes.
+
+<P>
+<TT>cp_acp_export</TT> waits until all Global Memory Accesses of ACP which
+have been issued before calling <TT>cp_acp_export</TT> are completed.
+
+<P>
+<TT>cp_acp_export</TT> returns the total size of receive data
+ on success. The size is returned in bytes. <TT>  cp_acp_export</TT> returns a negative integer on failure.
+
+<P>
+</LI>
+</UL>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html121"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/share/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html119"
+  HREF="node6.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/share/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html115"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/share/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html122"
+  HREF="node11.html">Bibliography</A>
+<B> Up:</B> <A NAME="tex2html120"
+  HREF="node6.html">Function reference</A>
+<B> Previous:</B> <A NAME="tex2html116"
+  HREF="node9.html">Fortran 77 interface to</A></DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>
